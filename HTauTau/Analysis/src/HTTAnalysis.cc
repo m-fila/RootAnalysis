@@ -101,8 +101,8 @@ int main(int argc, char ** argv)
 	  myAnalyzers.push_back(new MLAnalyzer("MLAnalyzer",decayModeName));
 	}
       }
-      else if(processName.find("Synch")!=std::string::npos)
-	myAnalyzers.push_back(new HTTSynchNTuple("SynchNTuple",decayModeName));
+      //else if(processName.find("Synch")!=std::string::npos)
+      //myAnalyzers.push_back(new HTTSynchNTuple("SynchNTuple",decayModeName));
       else{
 	std::cout<<"Incorrect process name: "<<processName<<std::endl;
 	return 1;

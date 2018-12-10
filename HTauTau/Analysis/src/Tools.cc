@@ -6,15 +6,14 @@
 namespace HTTAnalysis {
 
 float getLumi(){
-  /*
         //./.local/bin/brilcalc lumi --normtag /afs/cern.ch/user/l/lumipro/public/normtag_file/normtag_DATACERT.json -i processedLumis_SingleMuon.json       
-	float run2016 = 35.87*1E3; //Updated Run2016 luminosity
-        return run2016; //pb-1 data for NTUPLES_05_12_2016
-  */
-  
+
+        /* Run2016X-03Feb2017-v1/MINIAOD */
+        float run2016 = 35.92*1E3; //pb-1 data for NTUPLES_17_05_2017
 	/* Run2017X-31Mar2018-v1/MINIAOD */
         float run2017 = 41.501*1E3; //pb-1 data for NTUPLES_12_07_2018
-		        
+
+	return run2016;
 	return run2017;
 }
 //////////////////////////////////////////////////////////////////////////////

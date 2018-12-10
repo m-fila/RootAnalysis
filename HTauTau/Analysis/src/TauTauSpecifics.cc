@@ -77,9 +77,9 @@ void TauTauSpecifics::testAllCategories(const HTTAnalysis::sysEffects & aSystEff
         int tauIDmask=0, tauIsoTmask=0, tauIsoMmask=0, tauIsoLmask=0;
 
         for(unsigned int iBit=0; iBit<myAnalyzer->aEvent.ntauIds; iBit++) {
-                if(myAnalyzer->aEvent.tauIDStrings[iBit]=="byTightIsolationMVArun2v1DBoldDMwLT2017v2") tauIsoTmask |= (1<<iBit);
-                if(myAnalyzer->aEvent.tauIDStrings[iBit]=="byMediumIsolationMVArun2v1DBoldDMwLT2017v2") tauIsoMmask |= (1<<iBit);
-                if(myAnalyzer->aEvent.tauIDStrings[iBit]=="byLooseIsolationMVArun2v1DBoldDMwLT2017v2") tauIsoLmask |= (1<<iBit);
+                if(myAnalyzer->aEvent.tauIDStrings[iBit]=="byTightIsolationMVArun2v1DBoldDMwLT") tauIsoTmask |= (1<<iBit);
+                if(myAnalyzer->aEvent.tauIDStrings[iBit]=="byMediumIsolationMVArun2v1DBoldDMwLT") tauIsoMmask |= (1<<iBit);
+                if(myAnalyzer->aEvent.tauIDStrings[iBit]=="byLooseIsolationMVArun2v1DBoldDMwLT") tauIsoLmask |= (1<<iBit);
                 if(myAnalyzer->aEvent.tauIDStrings[iBit]=="againstMuonLoose3") tauIDmask |= (1<<iBit);
                 if(myAnalyzer->aEvent.tauIDStrings[iBit]=="againstElectronVLooseMVA6") tauIDmask |= (1<<iBit);
         }
@@ -92,19 +92,25 @@ void TauTauSpecifics::testAllCategories(const HTTAnalysis::sysEffects & aSystEff
         bool tau2IsoT = ( (int)myAnalyzer->aLeg2.getProperty(PropertyEnum::tauID) & tauIsoTmask) == tauIsoTmask;
         bool tau2IsoM = ( (int)myAnalyzer->aLeg2.getProperty(PropertyEnum::tauID) & tauIsoMmask) == tauIsoMmask;
         bool tau2IsoL = ( (int)myAnalyzer->aLeg2.getProperty(PropertyEnum::tauID) & tauIsoLmask) == tauIsoLmask;
-
-        bool fullIso = tau1IsoT && tau2IsoT;
+    
+	bool fullIso = tau1IsoT && tau2IsoT;
         bool relaxedIso = (tau1IsoM && tau2IsoL) || (tau2IsoM && tau1IsoL);
         bool antiIso = (tau1IsoM && tau2IsoL && !tau2IsoT) || (tau2IsoM && tau1IsoL && !tau1IsoT);
 
-        bool trigger1 = myAnalyzer->aLeg1.hasTriggerMatch(TriggerEnum::HLT_DoubleMediumChargedIsoPFTau35_Trk1_eta2p1_Reg) &&
-	               myAnalyzer->aLeg2.hasTriggerMatch(TriggerEnum::HLT_DoubleMediumChargedIsoPFTau35_Trk1_eta2p1_Reg);
+        bool mediumIsoTrigger = myAnalyzer->aLeg1.hasTriggerMatch(TriggerEnum::HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg) &&
+                                myAnalyzer->aLeg2.hasTriggerMatch(TriggerEnum::HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Reg);
 
-        bool trigger2 = myAnalyzer->aLeg1.hasTriggerMatch(TriggerEnum::HLT_DoubleMediumChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg) &&
-                              myAnalyzer->aLeg2.hasTriggerMatch(TriggerEnum::HLT_DoubleMediumChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg);
+        bool mediumCombinedIsoTrigger = myAnalyzer->aLeg1.hasTriggerMatch(TriggerEnum::HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg) &&
+                                        myAnalyzer->aLeg2.hasTriggerMatch(TriggerEnum::HLT_DoubleMediumCombinedIsoPFTau35_Trk1_eta2p1_Reg);
 
-        bool trigger = trigger1 || trigger2;
-      
+        bool trigger = mediumIsoTrigger || mediumCombinedIsoTrigger;
+        
+        if(myAnalyzer->aEvent.getRunId()>280385) {
+                trigger = mediumCombinedIsoTrigger;
+        } else if(myAnalyzer->aEvent.getRunId()>1) {
+                trigger = mediumIsoTrigger;
+        }
+	      
         unsigned int metFilters = myAnalyzer->aEvent.getMETFilterDecision();
         unsigned int dataMask = (1<<8) -1;
 	      dataMask -= (1<<5);//Problem with globalTightHalo2016Filter

@@ -4,7 +4,7 @@ include_directories(${PROJECT_SOURCE_DIR}/../include ${CMAKE_SOURCE_DIR}/Core/in
 include_directories(${ROOTINCDIR})
 
 add_library(Analysis SHARED ChannelSpecifics.cc HTTAnalyzer.cc
-  HTTAnalyzerCPmethods.cc HTTHistograms.cc HTTSynchNTuple.cc
+  HTTAnalyzerCPmethods.cc HTTHistograms.cc
   MuTauSpecifics.cc TauTauSpecifics.cc Tools.cc BTagCalibrationStandalone.cpp MLAnalyzer.cc)
 
 # Define an executable

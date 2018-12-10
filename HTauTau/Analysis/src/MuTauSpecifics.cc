@@ -69,7 +69,7 @@ void MuTauSpecifics::testAllCategories(const HTTAnalysis::sysEffects & aSystEffe
 
         int tauIDmask = 0;
         for(unsigned int iBit=0; iBit<myAnalyzer->aEvent.ntauIds; iBit++) {
-                if(myAnalyzer->aEvent.tauIDStrings[iBit]=="byTightIsolationMVArun2v1DBoldDMwLT2017v2") tauIDmask |= (1<<iBit);
+                if(myAnalyzer->aEvent.tauIDStrings[iBit]=="byTightIsolationMVArun2v1DBoldDMwLT") tauIDmask |= (1<<iBit);
                 if(myAnalyzer->aEvent.tauIDStrings[iBit]=="againstMuonTight3") tauIDmask |= (1<<iBit);
                 if(myAnalyzer->aEvent.tauIDStrings[iBit]=="againstElectronVLooseMVA6") tauIDmask |= (1<<iBit);
         }
@@ -83,9 +83,17 @@ void MuTauSpecifics::testAllCategories(const HTTAnalysis::sysEffects & aSystEffe
 
         bool muonKinematics = myAnalyzer->aLeg1.getP4(aSystEffect).Pt()>20 && fabs(myAnalyzer->aLeg1.getP4(aSystEffect).Eta())<2.1;
 
-        bool trigger = myAnalyzer->aLeg1.hasTriggerMatch(TriggerEnum::HLT_IsoMu27) ||
-                       myAnalyzer->aLeg1.hasTriggerMatch(TriggerEnum::HLT_IsoMu24_eta2p1) ||
-	               myAnalyzer->aLeg1.hasTriggerMatch(TriggerEnum::HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1);
+
+	bool trigger = myAnalyzer->aLeg1.hasTriggerMatch(TriggerEnum::HLT_IsoMu22) ||
+	               myAnalyzer->aLeg1.hasTriggerMatch(TriggerEnum::HLT_IsoTkMu22) ||
+	               myAnalyzer->aLeg1.hasTriggerMatch(TriggerEnum::HLT_IsoMu22_eta2p1) ||
+                       myAnalyzer->aLeg1.hasTriggerMatch(TriggerEnum::HLT_IsoTkMu22_eta2p1);
+ 
+         if(myAnalyzer->aLeg1.getP4().Pt()<23) {
+           trigger = myAnalyzer->aLeg1.hasTriggerMatch(TriggerEnum::HLT_IsoMu19_eta2p1_LooseIsoPFTau20) ||
+                     myAnalyzer->aLeg1.hasTriggerMatch(TriggerEnum::HLT_IsoMu19_eta2p1_LooseIsoPFTau20_SingleL1);
+         }
+
         
         unsigned int metFilters = myAnalyzer->aEvent.getMETFilterDecision();
         unsigned int dataMask = (1<<8) -1;
