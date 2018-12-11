@@ -113,7 +113,6 @@ void TauTauSpecifics::testAllCategories(const HTTAnalysis::sysEffects & aSystEff
 	      
         unsigned int metFilters = myAnalyzer->aEvent.getMETFilterDecision();
         unsigned int dataMask = (1<<8) -1;
-	      dataMask -= (1<<5);//Problem with globalTightHalo2016Filter
         unsigned int mcMask = dataMask - (1<<6) - (1<<7);
         bool metFilterDecision = (metFilters & mcMask) == mcMask;
 

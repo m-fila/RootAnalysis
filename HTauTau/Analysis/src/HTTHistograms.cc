@@ -437,7 +437,7 @@ void HTTHistograms::finalizeHistograms(const std::vector<const HTTAnalysis::even
         ///Control regions plots	
         for(auto iCategory: mainCategoriesRejester) {
 	  
-                //plotCPhistograms(iCategory);
+                plotCPhistograms(iCategory);
 
                 plotStack(iCategory, "MassSV");
                 plotStack(iCategory, "MassVis");
