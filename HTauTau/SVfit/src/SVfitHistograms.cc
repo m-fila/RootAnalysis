@@ -80,7 +80,7 @@ void SVfitHistograms::finalizeHistograms(const std::vector<const HTTAnalysis::ev
 
   AnalysisHistograms::finalizeHistograms();
 
-  std::vector<std::string> names = {"Pythia8","ggHTT125", "DY0Jets"};
+  std::vector<std::string> names = {"Pythia8","ggHTT125", "DY0Jets", "DY0JetsMatchT"};
 
   for(unsigned int i=0;i<names.size();++i){
     std::string hNameSuffix = names[i];
@@ -88,8 +88,10 @@ void SVfitHistograms::finalizeHistograms(const std::vector<const HTTAnalysis::ev
     plotSingleHistogram("h1DMassVis"+hNameSuffix);
     plotSingleHistogram("h1DMassGen"+hNameSuffix);
     plotSingleHistogram("h1DMassFastMTT"+hNameSuffix);
+    plotSingleHistogram("h1DMassSVFit"+hNameSuffix);
     plotSingleHistogram("h1DMassCA"+hNameSuffix);
     plotSingleHistogram("h1DDeltaFastMTT"+hNameSuffix);
+    plotSingleHistogram("h1DDeltaSVFit"+hNameSuffix);
     plotSingleHistogram("h1DDeltaCA"+hNameSuffix);
     plotSingleHistogram("h1DCpuTimeFast"+hNameSuffix);
     plotSingleHistogram("h1DDeltaMET_X_Res"+hNameSuffix);

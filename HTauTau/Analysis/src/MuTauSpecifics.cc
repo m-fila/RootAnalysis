@@ -187,10 +187,11 @@ void MuTauSpecifics::testAllCategories(const HTTAnalysis::sysEffects & aSystEffe
         bool nobtag = myAnalyzer->nBJets==0;
 
 	///HACK
-	bool original = vbf;
+	bool original = jet0;
 	jet0 = original & passMVA;
 	boosted = original & passDeepTau;
 	vbf = original & passTraining;
+	cpPi = original & passDPF;
 	///////
 
         //Main categories

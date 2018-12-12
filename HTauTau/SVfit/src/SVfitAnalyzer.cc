@@ -66,18 +66,7 @@ void SVfitAnalyzer::initialize(TDirectory* aDir,
 void SVfitAnalyzer::setAnalysisObjects(const EventProxyHTT & myEventProxy){
 
   HTTAnalyzer::setAnalysisObjects(myEventProxy);
-
-  ///A temorary hack
-  if(aPair.getLeg1().getProperty(PropertyEnum::decayMode) == HTTAnalysis::hadronicTauDecayModes::tauDecayMuon){
-    aLeg1 = aPair.getLeg1();
-    aLeg2 = aPair.getLeg2();
-  }
-  else if(aPair.getLeg2().getProperty(PropertyEnum::decayMode) == HTTAnalysis::hadronicTauDecayModes::tauDecayMuon){
-    aLeg1 = aPair.getLeg2();
-    aLeg2 = aPair.getLeg1();
-  }
-  /////
-    
+  
   aCovMET[0][0] = aPair.getMETMatrix().at(0);
   aCovMET[0][1] = aPair.getMETMatrix().at(1);
   aCovMET[1][0] = aPair.getMETMatrix().at(2);
@@ -309,21 +298,27 @@ void SVfitAnalyzer::fillControlHistos(const std::string & hNameSuffix){
   TLorentzVector nunuGen = tautauGen - 
     aGenLeg1.getChargedP4() - aGenLeg2.getChargedP4() -
     aGenLeg1.getNeutralP4() - aGenLeg2.getNeutralP4();
-  TLorentzVector SVFitP4;//TEST = computeMTT("fastMTT");  
 
+  TLorentzVector fastMTTP4 = computeMTT("fastMTT");
+  
   float visMass = aVisSum.M();
-  double delta = (SVFitP4.M() - tautauGen.M())/tautauGen.M();
-
   double massCA = runCAAlgo(aLeg1, aLeg2, aMET);
+  double massSVFit = aPair.getP4().M();
 
   double recoX1 = 0.0, recoX2 = 0.0;
   std::tie(recoX1, recoX2) = fastMTTAlgo.getBestX();
 
   myHistos_->fill1DHistogram("h1DMassVis"+hNameSuffix, visMass);
-  myHistos_->fill1DHistogram("h1DMassGen"+hNameSuffix,tautauGen.M());
-  myHistos_->fill1DHistogram("h1DMassFastMTT"+hNameSuffix,SVFitP4.M());
+  myHistos_->fill1DHistogram("h1DMassGen"+hNameSuffix, tautauGen.M());
+  myHistos_->fill1DHistogram("h1DMassFastMTT"+hNameSuffix, fastMTTP4.M());
+  myHistos_->fill1DHistogram("h1DMassSVFit"+hNameSuffix, massSVFit);
   myHistos_->fill1DHistogram("h1DMassCA"+hNameSuffix, massCA);
+
+  double delta = (fastMTTP4.M() - tautauGen.M())/tautauGen.M();
   myHistos_->fill1DHistogram("h1DDeltaFastMTT"+hNameSuffix,delta);
+
+  delta = (massSVFit - tautauGen.M())/tautauGen.M();
+  myHistos_->fill1DHistogram("h1DDeltaSVFit"+hNameSuffix,delta);
 
   delta = (massCA - tautauGen.M())/tautauGen.M();
   myHistos_->fill1DHistogram("h1DDeltaCA"+hNameSuffix,delta);
@@ -363,7 +358,6 @@ void SVfitAnalyzer::fillControlHistos(const std::string & hNameSuffix){
   myHistos_->fill1DHistogram("h1DTauID_DPFTau_2016_v1tauVSall"+hNameSuffix, tauIDRaw);
 
   tauIDRaw = aLeg2.getProperty(PropertyEnum::DPFTau_2016_v0tauVSall);
-  //if(tauIDRaw>1) tauIDRaw = 0;//events with original DPFTau=-1 go to 0 instead of 2
   myHistos_->fill1DHistogram("h1DTauID_DPFTau_2016_v0tauVSall"+hNameSuffix, tauIDRaw);
 
   tauIDRaw = aLeg2.getProperty(PropertyEnum::deepTau2017v1tauVSjet);
@@ -409,7 +403,7 @@ bool SVfitAnalyzer::analyze(const EventProxyBase& iEvent, ObjectMessenger *aMess
 
   const EventProxyHTT & myEventProxy = static_cast<const EventProxyHTT&>(iEvent);
   sampleName = HTTAnalysis::getSampleName(myEventProxy);
-
+  
   std::string hNameSuffix = sampleName;
   double sampleType = 0;
   if(sampleName.find("TT")!=std::string::npos &&
@@ -428,9 +422,11 @@ bool SVfitAnalyzer::analyze(const EventProxyBase& iEvent, ObjectMessenger *aMess
   bool goodGenTau = aGenLeg1.getP4().E()>1.0 && aGenLeg2.getP4().E()>1.0;
   bool isTauHad = aGenLeg2.getProperty(PropertyEnum::decayMode)!=HTTAnalysis::tauDecayMuon &&
                   aGenLeg2.getProperty(PropertyEnum::decayMode)!=HTTAnalysis::tauDecaysElectron;
+
+  bool isMuTau = aGenLeg1.getProperty(PropertyEnum::decayMode)==HTTAnalysis::tauDecayMuon;    
   
   goodGenTau &= genVisP4.Perp()>10 && std::abs(genVisP4.Eta())<2.3;
-  goodGenTau &= isTauHad;
+  goodGenTau &= isTauHad && isMuTau;
   
   isGoodReco &= aGenLeg2.getP4().DeltaR(aLeg2.getP4())<0.2;
   isGoodReco &= aLeg2.getP4().Perp()>18 && std::abs(aLeg2.getP4().Eta())<2.3;
@@ -438,9 +434,9 @@ bool SVfitAnalyzer::analyze(const EventProxyBase& iEvent, ObjectMessenger *aMess
 
   int tauIDmask = 0;
   for(unsigned int iBit=0; iBit<myEventProxy.event->ntauIds; iBit++) {
-    //if(myEventProxy.event->tauIDStrings[iBit]=="byVLooseIsolationMVArun2v1DBnewDMwLT2017v2") tauIDmask |= (1<<iBit);
-    //if(myEventProxy.event->tauIDStrings[iBit]=="againstMuonLoose3") tauIDmask |= (1<<iBit);
-    //if(myEventProxy.event->tauIDStrings[iBit]=="againstElectronVLooseMVA6") tauIDmask |= (1<<iBit);
+    if(myEventProxy.event->tauIDStrings[iBit]=="byTightIsolationMVArun2v1DBnewDMwLT2017v2") tauIDmask |= (1<<iBit);
+    if(myEventProxy.event->tauIDStrings[iBit]=="againstMuonLoose3") tauIDmask |= (1<<iBit);
+    if(myEventProxy.event->tauIDStrings[iBit]=="againstElectronVLooseMVA6") tauIDmask |= (1<<iBit);
   }
   bool passTauPreselection = true;
   passTauPreselection &= aLeg2.getP4().DeltaR(aLeg1.getP4())>0.4;
