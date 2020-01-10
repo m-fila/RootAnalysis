@@ -1,0 +1,3 @@
+[submodule "TPCReco"]
+	path = TPCReco
+	url = https://github.com/akalinow/TPCReco
