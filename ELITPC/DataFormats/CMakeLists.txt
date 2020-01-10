@@ -10,13 +10,15 @@ ROOT_GENERATE_DICTIONARY(G__${MODULE_NAME} ${PROJECT_SOURCE_DIR}/${MODULE_NAME}/
  LINKDEF ${PROJECT_SOURCE_DIR}/${MODULE_NAME}/include/LinkDef.h)
 
 add_library(${MODULE_NAME} SHARED ${sources} G__${MODULE_NAME}.cxx)
+add_dependencies(${MODULE_NAME} TPC_Reco)
+
 
 # Define headers for this library. PUBLIC headers are used for
 # compiling the library, and will be added to consumers' build
 # paths.
   
 # Depend on a library that we defined in the top-level file
-target_link_libraries(${MODULE_NAME} ${Boost_LIBRARIES})
+target_link_libraries(${MODULE_NAME} ${Boost_LIBRARIES} TPCReco)
 
 install(TARGETS ${MODULE_NAME} LIBRARY DESTINATION lib)
 

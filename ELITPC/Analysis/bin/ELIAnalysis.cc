@@ -1,22 +1,15 @@
-/*
- ============================================================================
- Name        : HTTAnalysis.cc
- Author      : Artur Kalinowski
- Version     :
- Copyright   : GPL
- ============================================================================
- */
-
 #include <iostream>
 
 #include "TreeAnalyzer.h"
 
-#include "EventProxyHTT.h"
-#include "HTTAnalyzer.h"
-#include "MLAnalyzer.h"
-#include "MLObjectMessenger.h"
+//#include "EventProxyHTT.h"
+#include "EventProxyELI.h"
+#include "ELIAnalyzer.h"
+//#include "HTTAnalyzer.h"
+//#include "MLAnalyzer.h"
+//#include "MLObjectMessenger.h"
 
-#include "HTTSynchNTuple.h"
+//#include "HTTSynchNTuple.h"
 
 #include "TFile.h"
 #include "TStopwatch.h"
@@ -80,29 +73,30 @@ int main(int argc, char ** argv)
 
       //----------------------------------------------------------
       std::vector<Analyzer*> myAnalyzers;
-      EventProxyHTT *myEvent = new EventProxyHTT();
-      ObjectMessenger* OMess = new ObjectMessenger("ObjectMessenger created in HTTAnalysis.cc");
+      //EventProxyHTT *myEvent = new EventProxyHTT();
+      //ObjectMessenger* OMess = new ObjectMessenger("ObjectMessenger created in HTTAnalysis.cc");
+      EventProxyELI *myEvent = new EventProxyELI();
+      ObjectMessenger* OMess = new ObjectMessenger("ObjectMessenger created in ELIAnalysis.cc");
+
 
       std::string decayModeName;
-      if(processName.find("MuTau")!=std::string::npos) decayModeName = "MuTau";
-      else if(processName.find("TT")!=std::string::npos) decayModeName = "TauTau";
-      else if(processName.find("MM")!=std::string::npos) decayModeName = "MuMu";     
+      if(processName.find("MC")!=std::string::npos) decayModeName = "MC";
       else{
 	std::cout<<"Incorrect process name: "<<processName<<std::endl;
 	return 1;
       }
             
       if(processName.find("Analysis")!=std::string::npos){
-	myAnalyzers.push_back(new HTTAnalyzer("HTTAnalyzer",decayModeName));
+	myAnalyzers.push_back(new ELIAnalyzer("ELIAnalyzer",decayModeName));
 	// MLAnalyzer's purpose is to flush data to TTree, but this kind of output is disabled in multithread mode
-	if(processName=="MLAnalysisMuTau" and noOfThreads==1) {
-	  delete OMess;
-	  OMess = new MLObjectMessenger("MLObjectMessenger created in HTTAnalysis.cc");
-	  myAnalyzers.push_back(new MLAnalyzer("MLAnalyzer",decayModeName));
-	}
+//	if(processName=="MLAnalysisMuTau" and noOfThreads==1) {
+//	  delete OMess;
+//	  OMess = new MLObjectMessenger("MLObjectMessenger created in HTTAnalysis.cc");
+//	  myAnalyzers.push_back(new MLAnalyzer("MLAnalyzer",decayModeName));
+//	}
       }
-      else if(processName.find("Synch")!=std::string::npos)
-	myAnalyzers.push_back(new HTTSynchNTuple("SynchNTuple",decayModeName));
+ //     else if(processName.find("Synch")!=std::string::npos)
+//	myAnalyzers.push_back(new HTTSynchNTuple("SynchNTuple",decayModeName));
       else{
 	std::cout<<"Incorrect process name: "<<processName<<std::endl;
 	return 1;
