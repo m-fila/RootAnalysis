@@ -1,3 +1,4 @@
-[submodule "TPCReco"]
-	path = TPCReco
+
+[submodule "ELITPC/deps/TPCReco"]
+	path = ELITPC/deps/TPCReco
 	url = https://github.com/akalinow/TPCReco
