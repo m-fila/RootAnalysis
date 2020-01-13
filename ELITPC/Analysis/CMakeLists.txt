@@ -10,14 +10,14 @@ add_library(${MODULE_NAME} SHARED ${sources})
 # Define an executable
 add_executable(eliAnalysis bin/ELIAnalysis.cc)
 
-add_dependencies(${MODULE_NAME}) TPC_Reco)
+add_dependencies(${MODULE_NAME} TPC_Reco)
 add_dependencies(eliAnalysis TPC_Reco)
 # and target_link_libraries(TARGET PUBLIC TPCReco)
 target_link_libraries(${MODULE_NAME} FrameworkCore DataFormats TPCReco)
-target_link_libraries(httAnalysis ${MODULE_NAME} FrameworkCore DataFormats ${Boost_LIBRARIES} ${ROOT_LIBRARIES} Proof RooFitCore RooFit TPCReco)
+target_link_libraries(eliAnalysis ${MODULE_NAME} FrameworkCore DataFormats ${Boost_LIBRARIES} ${ROOT_LIBRARIES} Proof RooFitCore RooFit TPCReco)
 
 install(TARGETS ${MODULE_NAME} LIBRARY DESTINATION lib)
-install(TARGETS httAnalysis RUNTIME DESTINATION bin)
+install(TARGETS eliAnalysis RUNTIME DESTINATION bin)
 install(FILES $<1:${PROJECT_SOURCE_DIR}/${MODULE_NAME}/config/> DESTINATION config)
 install(FILES $<1:${PROJECT_SOURCE_DIR}/${MODULE_NAME}/python/> DESTINATION python)
 install(DIRECTORY DESTINATION fig_png)
